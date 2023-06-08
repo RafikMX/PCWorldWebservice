@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+    <s:Body>
+        <ValidaConstanciaResponse xmlns="http://tempuri.org/">
+            <ValidaConstanciaResult>
+                &lt;nom&gt;
+                    &lt;esValida&gt;false&lt;/esValida&gt;
+                &lt;/nom&gt;
+            </ValidaConstanciaResult>
+        </ValidaConstanciaResponse>
+    </s:Body>
+</s:Envelope>

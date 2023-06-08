@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+    <s:Body>
+        <RecuperaResponse xmlns="http://tempuri.org/">
+            <RecuperaResult>Super secret certificate</RecuperaResult>
+        </RecuperaResponse>
+    </s:Body>
+</s:Envelope>

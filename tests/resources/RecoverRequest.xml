@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://tempuri.org/">
+    <SOAP-ENV:Body>
+        <ns1:Recupera>
+            <ns1:usuario>test</ns1:usuario>
+            <ns1:password>test</ns1:password>
+            <ns1:identificador>1234</ns1:identificador>
+        </ns1:Recupera>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
