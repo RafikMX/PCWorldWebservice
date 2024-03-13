@@ -3,7 +3,6 @@
 namespace Rafik\PscWorldWebservice\Test;
 
 use Nyholm\Psr7\Factory\Psr17Factory;
-use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\StreamFactoryInterface;
 use Rafik\PscWorldWebservice\PscWorldClient;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -78,6 +77,15 @@ class PscWorldClientTest extends TestCase
         $this->assertTrue($certificate->isValid());
     }
 
+	public function testValidateData(): void
+	{
+		// This is a test certificate from PSC World
+		$certificate = base64_encode($this->loadResource('certificate.ber'));
+		$data = $this->streamFactory->createStream('1234');
+
+		$this->assertTrue($this->client->validateData($certificate, $data));
+	}
+
     private function assertSoapRequest(string $method, string $url, array $options): void
     {
         $this->assertEquals('POST', $method);
@@ -100,12 +108,7 @@ class PscWorldClientTest extends TestCase
 
     private function loadSoapResponse(string $action): string
     {
-        return file_get_contents($this->getResourceDir() . DIRECTORY_SEPARATOR . $action . 'Response.xml');
-    }
-
-    private function getResourceDir(): string
-    {
-        return __DIR__ . DIRECTORY_SEPARATOR . 'resources';
+        return $this->loadResource($action . 'Response.xml');
     }
 
     private function parseHeader(string $header): string

@@ -28,6 +28,7 @@ use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
 use Symfony\Component\Serializer\NameConverter\MetadataAwareNameConverter;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
+use vakata\asn1\structures\TimestampResponse;
 
 class PscWorldClient
 {
@@ -73,18 +74,8 @@ class PscWorldClient
      */
     public function generate(string $id, StreamInterface $data): string
     {
-        $hash = hash_init('sha256');
-
-        if ($data->isSeekable()) {
-            $data->rewind();
-        }
-
-        while (!$data->eof()) {
-            $buffer = $data->read(8192);
-
-            hash_update($hash, $buffer);
-        }
-        $base64Hash = base64_encode(hash_final($hash, true));
+        $hash = $this->generateHash($data);
+		$base64Hash = base64_encode($hash);
 
         $request = $this->createRequest([
             'hash' => $base64Hash,
@@ -123,6 +114,18 @@ class PscWorldClient
         return $this->serializer->deserialize($xml, Certificate::class, 'xml');
     }
 
+	public function validateData(string $base64Certificate, StreamInterface $data): bool
+	{
+		$certificate = base64_decode($base64Certificate);
+		$fileHash = $this->generateHash($data);
+
+		$timestampResponse = TimestampResponse::fromString($certificate)->toArray();
+		$token = $timestampResponse['timeStampToken']['signedData']['tokenInfo'];
+		$certificateHash = base64_decode($token['data']['messageImprint']['hashedMessage']);
+
+		return hash_equals($certificateHash, $fileHash);
+	}
+
     private function createRequest(array $params): array
     {
         $request = $this->withAuthentication($params);
@@ -158,6 +161,23 @@ class PscWorldClient
 
         return $data;
     }
+
+	private function generateHash(StreamInterface $data): string
+	{
+		$hash = hash_init('sha256');
+
+		if ($data->isSeekable()) {
+			$data->rewind();
+		}
+
+		while (!$data->eof()) {
+			$buffer = $data->read(8192);
+
+			hash_update($hash, $buffer);
+		}
+
+		return hash_final($hash, true);
+	}
 
     private function withAuthentication(array $request): array
     {
